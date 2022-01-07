@@ -1,23 +1,12 @@
 ---
 # tasks file for ansible-role-change_shell
 
-# determine the current shell
-- name: Get current user shell
-  shell: "dscl . -read /Users/{{ user }} UserShell | sed 's/UserShell: //'"
-  register: user_shell_current
-  changed_when: false
+- name: Configure user shell for macOS
+  import_tasks:
+    name: change_shell
+    src: "{{ role_path }}/tasks/macos.yml"
+  when: ansible_os_family == "Darwin"
 
-# check that desired shell is installed, if not, install it
-
-# set fact for the shell path
-- name: Set shell path
-  set_fact:
-    shell_path: "{{ shell_dir_mac }}/{{ shell_new }}"
-
-
-# run a command to change the shell to the desired shell
-# chsh -s /bin/zsh ansible_user
-- name: Change user shell
-  shell: "chsh -s {{ shell_path }} {{ user }}"
-  when: user_shell_current != user_shell_new
+# TO DO: configure user shell for Linux distros
+ 
 
