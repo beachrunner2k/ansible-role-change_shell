@@ -1,2 +1,17 @@
 ---
 # vars file for ansible-role-change_shell
+
+user_shell_new: "{{ user_shell }}"
+
+macOS_preinstalled_shells:
+  - bash
+  - csh
+  - dash
+  - ksh
+  - sh
+  - tcsh
+  - zsh
+
+macOS_additional_shells:
+  - fish
+  - powershell

@@ -1,0 +1,15 @@
+---
+
+- name: add path to fish shell to /etc/shells
+  lineinfile:
+    path: /etc/shells
+    regexp: 'fish'
+    line: '/usr/local/bin/fish'
+    state: present
+    backup: yes
+  become: true
+  become_user: root
+
+- name: Set the location of the fish shell
+  set_fact:
+    shell_dir_mac: /usr/local/bin/

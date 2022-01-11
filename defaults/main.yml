@@ -2,6 +2,8 @@
 # defaults file for ansible-role-change_shell
 
 user: "{{ ansible_user }}"
-user_shell_new: zsh
+user_shell: zsh
 shell_dir_mac: /bin
 shell_dir_linux: /usr/bin
+# default fish shell location when installed with Homebrew
+shell_fish_path: /usr/local/bin/fish

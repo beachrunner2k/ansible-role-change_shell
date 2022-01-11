@@ -1,7 +1,7 @@
 change_shell
 =========
 
-A brief description of the role goes here.
+This role changes the default shell for a user on MacOS.
 
 Requirements
 ------------

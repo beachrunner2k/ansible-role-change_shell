@@ -1,21 +1,53 @@
 ---
 
 # determine the current shell
-- name: Get current user shell
+- name: Get current user shell path
   shell: "dscl . -read /Users/{{ user }} UserShell | sed 's/UserShell: //'"
-  register: user_shell_current
+  register: result
   changed_when: false
 
-# check that desired shell is installed, if not, install it
+- name: Set current user shell path
+  set_fact:
+    user_shell_path_current: "{{ result.stdout }}"
+
+# check if specified shell is preinstalled
+- name: Check if shell is preinstalled in macOS
+  set_fact:
+    shell_preinstalled: true
+  when: user_shell_new in macOS_preinstalled_shells
+
+- name: Check if shell is in list of supported shells
+  set_fact:
+    shell_supported: true
+  when: user_shell_new in macOS_additional_shells
+
+- name: Fail if specified shell is not supported
+  fail:
+    msg: "Shell {{ user_shell_new }} is not supported."
+  when: shell_preinstalled is not defined and shell_supported is not defined
+
+- name: Install the shell if required (with Homebrew)
+  homebrew:
+    name: "{{ user_shell_new }}"
+    state: present
+  when: shell_supported is true and shell_preinstalled is not defined
+
+# perform specific tasks for non-preinstalled shells
+
+# if fish, add path to fish to /etc/shells
+- name: include the fish task
+  import_tasks: macos_fish.yml
+  when: user_shell_new == "fish"
 
 # set fact for the shell path
 - name: Set shell path
   set_fact:
-    shell_path: "{{ shell_dir_mac }}/{{ user_shell_new }}"
-
+    user_shell_path_new: "{{ shell_dir_mac }}/{{ user_shell_new }}"
 
 # run a chsh command to change the shell to the desired shell
 # chsh -s /bin/zsh ansible_user
 - name: Change user shell
-  shell: "chsh -s {{ shell_path }} {{ user }}"
-  when: user_shell_current != user_shell_new
+  shell: "chsh -s {{ user_shell_path_new }} {{ user }}"
+  when: user_shell_path_current != user_shell_path_new
+  become: true
+  become_user: root
