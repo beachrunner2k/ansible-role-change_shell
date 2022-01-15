@@ -1,7 +1,7 @@
 ---
 # defaults file for ansible-role-change_shell
 
-user: "{{ ansible_user }}"
+user: "{{ ansible_user_id }}"
 user_shell: zsh
 shell_dir_mac: /bin
 shell_dir_linux: /usr/bin
